@@ -1,36 +1,110 @@
-# plant-disease-classification
+# Plant Disease Detection using Deep Learning
 
-A Convolutional Neural Network with TensorFlow and OpenCV using a dataset that contains different leafs of different plants. Repository has the dataset under `plant_disease_classification/datasets` folder.
+## Author
+Faizan Hussain  
+GitHub: https://github.com/faizanhussain0  
 
-## Requirements
+---
 
-- tensorflow
-- numpy
-- scikit-learn
-- opencv-python
-- opencv-contrib-python
+## Project Overview
+Plant diseases significantly impact agricultural productivity and farmers’ income.  
+This project implements an image-based plant disease classification system using Deep Learning (CNN) to automatically identify plant diseases from leaf images.
 
-## Training
+The objective is to assist early disease detection and support better agricultural decision-making.
 
-Call **trainer.py** with `train` method with training and tests datasets.
+---
 
-```
-python plant_disease_classification/trainer.py --train plant_disease_classification/datasets/train --val plant_disease_classification/datasets/test --num_classes 38
-```
+## Problem Statement
+Manual identification of plant diseases is time-consuming and requires expert knowledge.  
+An automated deep learning-based image classification system can help detect diseases quickly and accurately.
 
-<p align="center">
-    <img src="https://github.com/abdullahselek/plant-disease-classification/blob/master/screenshot.png"/>
-</p>
+---
 
-## Model
+## Dataset
+The model is trained on a publicly available plant leaf image dataset consisting of healthy and diseased plant leaves across multiple classes.
 
-After successfull training, model is created under **plant_disease_classification/ckpts/** folder.
+Due to large file size, the dataset is not included in this repository.  
+You may use datasets such as the PlantVillage dataset or any similar plant disease dataset.
 
-## Classification
+Example dataset structure:
+dataset/
+ ├── train/
+ ├── validation/
+ └── test/
 
-Call `classify` function of **classifier.py** with selected image file path. Below there is sample command for CLI for default image path.
+---
 
-```
-python plant_disease_classification/classifier.py --classify
-```
+## Technologies Used
+- Python
+- TensorFlow
+- NumPy
+- Scikit-learn
+- OpenCV
+
+---
+
+## Approach
+- Image preprocessing and normalization  
+- Convolutional Neural Network (CNN) for feature extraction  
+- Multi-class classification using Softmax activation  
+- Model evaluation using validation data  
+
+---
+
+## Model Architecture
+- Convolutional Neural Network (CNN)
+- Convolution and pooling layers
+- Fully connected layers
+- Softmax output layer for multi-class prediction
+
+---
+
+## Training the Model
+Run the following command to train the model:
+
+python plant_disease_classification/trainer.py --train path_to_training_data --val path_to_validation_data --num_classes 38
+
+---
+
+## Model Output
+After successful training, model checkpoints are saved in:
+
+plant_disease_classification/ckpts/
+
+---
+
+## Inference / Prediction
+The trained model can be used to classify new plant leaf images by providing the image path to the classifier module.
+
+---
+
+## Evaluation Metrics
+- Accuracy
+- Loss
+- Confusion Matrix (optional enhancement)
+
+---
+
+## Key Learnings
+- Image preprocessing for deep learning
+- CNN-based image classification
+- Multi-class classification handling
+- Training and evaluating deep learning models
+- Working with real-world image datasets
+
+---
+
+## Future Improvements
+- Apply data augmentation
+- Use transfer learning models such as ResNet or MobileNet
+- Improve accuracy and generalization
+- Deploy using Streamlit or Flask
+- Enable real-time image prediction
+
+---
+
+## Disclaimer
+This project is created for learning and academic purposes.  
+The implementation is adapted from open-source references and extended with custom documentation and experimentation.
+
 
