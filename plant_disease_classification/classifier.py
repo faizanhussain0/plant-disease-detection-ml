@@ -6,39 +6,75 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-# Just disables the warning, doesn't enable AVX/FMA
+# ===== BASE DIR =====
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Disable TF warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+tf.compat.v1.disable_eager_execution()
 
 image_size = 128
 num_channels = 3
 
-graph_path = os.path.join('plant_disease_classification/ckpts/', 'plants-disease-model.meta')
-checkpoint_path = os.path.join('plant_disease_classification/ckpts/', 'plants-disease-model')
+# ===== PATHS =====
+MODEL_DIR = os.path.join(BASE_DIR, 'ckpts')
+GRAPH_PATH = os.path.join(MODEL_DIR, 'plants-disease-model.meta')
 
+# 👇 Input image path
+IMAGE_PATH = os.path.join(BASE_DIR, 'sample_images', 'leaf.jpg')
+
+# ===== LOAD CLASSES =====
+train_dir = os.path.join(BASE_DIR, 'datasets', 'train')
+classes = sorted(os.listdir(train_dir))
+num_classes = len(classes)
+
+# ===== LOAD MODEL =====
 session = tf.compat.v1.Session()
-saver = tf.compat.v1.train.import_meta_graph(graph_path)
-saver.restore(session, tf.train.latest_checkpoint('plant_disease_classification/ckpts/'))
-# saver.restore(session, checkpoint_path)
+saver = tf.compat.v1.train.import_meta_graph(GRAPH_PATH)
+saver.restore(session, tf.train.latest_checkpoint(MODEL_DIR))
 
-def classify(file_path='plant_disease_classification/datasets/test/0a02f9b47e8082558fa257092f0cedee.jpg'):
-    print(file_path)
-    images = []
-    image = cv2.imread(file_path)
-    # Resizing the image to our desired size and
-    # preprocessing will be done exactly as done during training
-    image = cv2.resize(image, (image_size, image_size), cv2.INTER_LINEAR)
-    images.append(image)
-    images = np.array(images, dtype=np.uint8)
-    images = images.astype('float32')
-    images = np.multiply(images, 1.0 / 255.0)
-    # The input to the network is of shape [None image_size image_size num_channels]. Hence we reshape.
-    x_batch = images.reshape(1, image_size, image_size, num_channels)
-    graph = tf.get_default_graph()
-    y_pred = graph.get_tensor_by_name("y_pred:0")
-    # Let's feed the images to the input placeholders
-    x= graph.get_tensor_by_name("x:0")
-    y_true = graph.get_tensor_by_name("y_true:0")
-    y_test_images = np.zeros((1, 38))
-    feed_dict_testing = {x: x_batch, y_true: y_test_images}
-    result = session.run(y_pred, feed_dict=feed_dict_testing)
-    print(result)
+graph = tf.compat.v1.get_default_graph()
+
+x = graph.get_tensor_by_name("x:0")
+y_true = graph.get_tensor_by_name("y_true:0")
+y_pred = graph.get_tensor_by_name("y_pred:0")
+
+
+def classify(image_path=IMAGE_PATH):
+    print(f"\nInput image: {image_path}")
+
+    # Check image exists
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image not found: {image_path}")
+
+    # Read image
+    image = cv2.imread(image_path)
+    image = cv2.resize(image, (image_size, image_size))
+    image = image.astype(np.float32) / 255.0
+
+    # Show image (for demo)
+    cv2.imshow("Input Leaf Image", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    # Prepare input
+    x_batch = image.reshape(1, image_size, image_size, num_channels)
+    y_dummy = np.zeros((1, num_classes))
+
+    # 🔥 THIS LINE WAS MISSING / BROKEN
+    prediction = session.run(
+        y_pred,
+        feed_dict={x: x_batch, y_true: y_dummy}
+    )
+
+    predicted_index = int(np.argmax(prediction))
+    confidence = float(np.max(prediction)) * 100
+    predicted_class = classes[predicted_index]
+
+    
+    print(f"Predicted Disease : {predicted_class}")
+    print(f"Confidence      : {confidence:.2f}%")
+    
+
+if __name__ == "__main__":
+    classify()

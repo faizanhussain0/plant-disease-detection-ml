@@ -3,6 +3,8 @@
 
 import os
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
+
 import datagenerator
 
 # Just disables the warning, doesn't enable AVX/FMA
@@ -60,7 +62,7 @@ def create_convolutional_layer(input,
     biases = create_biases(num_filters)
     # Creating the convolutional layer.
     layer = tf.nn.conv2d(input=input,
-                         filter=weights,
+                         filters=weights,
                          strides=[1, 1, 1, 1],
                          padding='SAME')
     layer += biases
@@ -147,7 +149,7 @@ session.run(tf.compat.v1.global_variables_initializer())
 
 y_true, y_true_cls = create_y_true()
 
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits_v2(logits=layer_fc2,
+cross_entropy = tf.compat.v1.nn.softmax_cross_entropy_with_logits(logits=layer_fc2,
                                                            labels=y_true)
 
 cost = tf.reduce_mean(cross_entropy)

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+venv/
+plant_disease_classification/ckpts/
+plant_disease_classification/sample_images/
+plant_disease_classification/datasets/

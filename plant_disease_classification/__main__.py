@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import argparse
 import click
 import trainer
 import classifier
